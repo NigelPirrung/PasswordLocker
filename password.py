@@ -7,16 +7,17 @@ import json
 #Dictionary to hold accounts and passwords
 accounts = {}
 
+#Method to save the accounts into the file
 def saveFile():
     with open('uploading.txt','w') as convert_file:
-                    convert_file.write(json.dumps(accounts))
+        convert_file.write(json.dumps(accounts))
 
+#Method to load the accounts from the file
 def loadAccounts():
-    f = open("uploading.txt", "a")
-
     with open('uploading.txt') as f:
-        read = f.read()
-    accounts = json.loads()
+        
+        tmp = json.loads(f.read())
+        accounts.update(tmp)
 
 #Function to generate password
 def generatePassword(length): 
@@ -25,7 +26,6 @@ def generatePassword(length):
     password = []
 
     while len(password)!= length:
-        
         random.shuffle(characters)
 
         for i in range(length):
@@ -43,14 +43,11 @@ def userChoice(choice):
             length = int(input("Enter password Length: "))
             accounts[account] = generatePassword(length)
             saveFile()
+
         elif choice == 2:
-            
             change = input("Enter account name: ")
 
-            
-            print(accounts)
-
-            if change in accounts:
+            if change in accounts.keys():
                 print("1. Change password \n2. New generated password")
                 usrInput = int(input("Your Choice: "))
                 
@@ -58,32 +55,32 @@ def userChoice(choice):
                     newPass = input("New Password: ")
                     newPass = newPass.strip()
                     accounts[change] = newPass
+                    saveFile()
 
                 elif usrInput == 2:
                     newLength = int(input("Enter password length: "))
                     accounts[change] = generatePassword(newLength)
+                    saveFile()
 
                 else:
                     print("Invalid Option")
             else:
                 print("\nAccount not found")
 
-            saveFile()
-
         elif choice == 3:
-            f = open("uploading.txt","r")
-            print(f.read())
-        
-            
+            if accounts:
+                for key, value in accounts.items():
+                    print("\n", key,"\n", value)
+            else:
+                print("\nNo saved accounts found\n")
+
         elif choice == 4:
             removeAccount = input("Account name: ")
             removeAccount = removeAccount.strip()
 
-            print(accounts.keys())
-
             if removeAccount in accounts.keys():
                 accounts.pop(removeAccount)
-                print(f"Account {removeAccount} removed ")
+                print(f"\tAccount {removeAccount} removed ")
                 saveFile()
             else :
                 print("account not found")
@@ -99,7 +96,7 @@ def userChoice(choice):
 
 
 #Start of Program
-#loadAccounts()
+loadAccounts()
 choice = 0
 while choice != 6:
     print("Password Manager: \n 1. Add a new account\n 2. Change existing account\n 3. View accounts \n 4. Delete account \n 5. Save \n 6. Exit")
